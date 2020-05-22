@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.instead.pay.commercial.mapper.CommercialMapper">
+    <sql id="select_sql">
+        commercial_id commercialId,
+        commercial_name commercialName,
+        commercial_iphone commercialIphone,
+        commercial_number commercialNumber,
+         commercial_balance commercialBalance,
+        commercial_ratio commercialRatio,
+        commercial_with_ratio commercialWithRatio,
+        update_time  updateTime,
+        creation_time creationTime,
+        role_Id roleId,
+        freeze_money freezeMoney,
+        all_money allMoney,
+        all_wit_money allWitMoney,
+        reserved2 reserved2
+    </sql>
+
+    <sql id="operator_sql">
+        commercial_id ,
+        commercial_name ,
+        commercial_iphone ,
+        commercial_number ,
+         commercial_balance ,
+        commercial_ratio ,
+        commercial_with_ratio ,
+        update_time  ,
+        creation_time ,
+        role_Id,
+        freeze_money,
+        all_money,
+        all_wit_money,
+        reserved2
+    </sql>
+
+    <select id="queryCommercial" resultType="Commercial">
+        select
+        <include refid="select_sql"></include>
+        from instead_pay_commercial
+        <where>
+            <if test="commercialId!=null">
+                and commercial_id = #{commercialId}
+            </if>
+            <if test="commercialName!=null">
+                and commercial_name = #{commercialName}
+            </if>
+            <if test="commercialIphone!=null">
+                and commercial_iphone = #{commercialIphone}
+            </if>
+            <if test="commercialNumber != null">
+                and commercial_number = #{commercialNumber}
+            </if>
+            <if test="commercialRatio!=null">
+                and commercial_ratio = #{commercialRatio}
+            </if>
+            <if test="updateTime!=null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="type!=null and type == 1">
+                and commercial_number = '0000000000'
+            </if>
+            <if test="type!=null and type == 2">
+                and commercial_number <![CDATA[!= ]]> '0000000000'
+            </if>
+            <if test="creationTime!=null">
+                and creation_time like concat('%',#{creationTime},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findRoleNameByUser" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT
+            role_Name
+        FROM
+            instead_pay_role
+        WHERE
+            role_id = (
+            SELECT
+                role_id
+            FROM
+                instead_pay_commercial
+            WHERE
+                commercial_name = #{commercialName} )
+    </select>
+
+    <select id="login" resultType="Commercial" parameterType="java.lang.String">
+        select commercial_id commercialId, commercial_name commercialName,commercial_password commercialPassword,role_id roleId,commercial_number commercialNumber
+        from instead_pay_commercial
+        where commercial_name = #{commercialName}
+    </select>
+
+    <select id="getCommercial" resultType="Commercial" parameterType="java.lang.String">
+        select
+        <include refid="select_sql"></include>
+        from instead_pay_commercial
+        where commercial_id = #{commercialId}
+    </select>
+
+    <select id="getCommercialByNum" resultType="Commercial" parameterType="java.lang.String">
+        select <include refid="select_sql"></include> from instead_pay_commercial where commercial_number =
+        #{commercialNumber}
+    </select>
+
+
+    <select id="queryTokenUrl" resultType="java.lang.String" parameterType="java.lang.String">
+        select token_url from instead_pay_token_white
+        where commercial_number = #{commercialNumber}
+    </select>
+
+    <insert id="insertCommercial" parameterType="Commercial">
+        insert into instead_pay_commercial
+            (commercial_id,commercial_name,commercial_iphone,commercial_number,commercial_password,commercial_balance,commercial_ratio,commercial_with_ratio,update_time,creation_time,role_id,reserved2)
+        values
+            (#{commercialId},#{commercialName},#{commercialIphone},#{commercialNumber},#{commercialPassword},#{commercialBalance},#{commercialRatio},#{commercialWithRatio},#{updateTime},#{creationTime},#{roleId},#{reserved2})
+    </insert>
+
+    <update id="updateCommercial" parameterType="Commercial">
+        update instead_pay_commercial
+        <trim prefix="set" suffixOverrides=",">
+            <if test="commercialIphone != null">
+                commercial_iphone=#{commercialIphone} ,
+            </if>
+            <if test="commercialName!=null">
+                commercial_name = #{commercialName} ,
+            </if>
+            <if test="commercialBalance!=null">
+                commercial_balance=#{commercialBalance} ,
+            </if>
+            <if test="commercialRatio!=null">
+                commercial_ratio=#{commercialRatio} ,
+            </if>
+            <if test="commercialWithRatio!=null">
+                commercial_with_ratio=#{commercialWithRatio} ,
+            </if>
+            <if test="commercialPassword!=null">
+                commercial_password=#{commercialPassword} ,
+            </if>
+            <if test="updateTime!=null">
+                update_time=#{updateTime} ,
+            </if>
+            <if test="roleId!=null">
+                role_id=#{roleId} ,
+            </if>
+            <if test="freezeMoney!=null">
+                freeze_money=#{freezeMoney} ,
+            </if>
+            <if test="allMoney!=null">
+                all_money=#{allMoney} ,
+            </if>
+            <if test="allWitMoney!=null">
+                all_wit_money=#{allWitMoney} ,
+            </if>
+            <if test="safetyPwd!=null">
+                safety_pwd=#{safetyPwd} ,
+            </if>
+            <if test="reserved2!=null">
+                reserved2=#{reserved2} ,
+            </if>
+        </trim>
+        where commercial_id = #{commercialId}
+    </update>
+
+    <delete id="deleteCommercial" parameterType="list">
+        delete from instead_pay_commercial
+        where commercial_id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getSafetyPwd" resultType="java.lang.String" parameterType="java.lang.String">
+        select safety_pwd safetyPwd from instead_pay_commercial where commercial_id = #{commercialId}
+    </select>
+
+    <select id="getCommDayUp" resultType="java.util.HashMap" parameterType="java.lang.String">
+        select
+         o.commercial_number commercialNumber,
+         i.commercial_balance commercialBalance,
+         i.freeze_money freezeMoney,
+         sum(o.allInMoney) allInMoney,
+         sum(o.allOutMoney) allOutMoney,
+         sum(o.dayInMoney) dayInMoney,
+         sum(o.dayOutMoney) dayOutMoney,
+         sum(o.dayWitMoney) dayWitMoney,
+         sum(o.dayInNum) dayInNum,
+         sum(o.dayOutNum) dayOutNum,
+         sum(o.dayWitNum) dayWitNum
+        from (
+         select
+            commercial_number,
+            case when (application_type=1 or application_type=4) then sum(operator_money) else 0 end allInMoney,
+            case when (application_type=3) then sum(operator_money) else 0 end allOutMoney,
+            case when DATEDIFF(now(),DATE(confirm_time))  = 0 and application_type=1 then sum(operator_money) else 0 end dayInMoney,
+            case when DATEDIFF(now(),DATE(confirm_time))  = 0 and application_type=2 then sum(operator_money) else 0 end dayOutMoney,
+            case when DATEDIFF(now(),DATE(confirm_time))  = 0 and application_type=3 then sum(operator_money) else 0 end dayWitMoney,
+            case when DATEDIFF(now(),DATE(confirm_time))  = 0 and application_type=1 then count(1) else 0 end dayInNum,
+            case when DATEDIFF(now(),DATE(confirm_time))  = 0 and application_type=2 then count(1) else 0 end dayOutNum,
+            case when DATEDIFF(now(),DATE(confirm_time))  = 0 and application_type=3 then count(1) else 0 end dayWitNum
+         from instead_pay_order
+        where  order_status='1' and commercial_number = #{commercialNumber}
+        GROUP BY
+                application_type,DATE(confirm_time)) o
+        LEFT JOIN instead_pay_commercial i on i.commercial_number = o.commercial_number
+    </select>
+</mapper>

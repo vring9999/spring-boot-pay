@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.instead.pay.commercial.mapper.IpWhiteMapper">
+    <sql id="select_sql">
+        commercial_number commercialNumber,
+        token_url tokenUrl,
+        remark
+    </sql>
+
+    <sql id="operator_sql">
+        commercial_number,
+        token_url
+    </sql>
+
+    <insert id="insert" parameterType="java.util.List">
+        insert into instead_pay_token_white
+         (<include refid="operator_sql"></include>)
+        value
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.commercialNumber},
+            #{item.tokenUrl}
+            )
+        </foreach>
+    </insert>
+
+    <select id="queryIp" parameterType = "java.lang.String" resultType="java.lang.String">
+        select token_url
+        from instead_pay_token_white
+        where commercial_number =#{commercialNumber}
+
+    </select>
+    
+    <delete id="deleteIpBycommercialNumber" parameterType = "java.lang.String" >
+        delete
+        from instead_pay_token_white
+        where commercial_number =#{commercialNumber}
+    </delete>
+
+</mapper>

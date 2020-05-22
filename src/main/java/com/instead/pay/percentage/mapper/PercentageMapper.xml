@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.instead.pay.percentage.mapper.PercentageMapper">
+    <sql id="select_sql">
+        percentage_id percentageId,
+        order_id orderId,
+        commercial_number commercialNumber,
+        Collection_money collectionMoney,
+        create_time createTime,
+        collection_type collectionType,
+        remark
+    </sql>
+
+    <sql id="operator_sql">
+        percentage_id ,
+        order_id ,
+        commercial_number ,
+        Collection_money ,
+        create_time ,
+        collection_type,
+        remark
+    </sql>
+
+    <insert id="insert" parameterType="Percentage">
+        insert into instead_pay_percentage(
+        <include refid="operator_sql"></include>
+        ) values (
+        #{percentageId},
+        #{orderId},
+        #{commercialNumber},
+        #{collectionMoney},
+        #{createTime},
+         #{collectionType},
+        #{remark}
+        )
+    </insert>
+
+    <select id="selectAll" parameterType="java.util.Map" resultType="Percentage">
+        select
+        <include refid="select_sql"></include>
+        from instead_pay_percentage
+        <trim prefix="where" suffixOverrides="and">
+            <if test="orderId!=null">
+                order_Id = #{orderId} and
+            </if>
+            <if test="commercialNumber!=null">
+                commercial_Number = #{commercialNumber} and
+            </if>
+            <if test="createTime!=null">
+                create_time = #{createTime}
+            </if>
+            <if test="collectionType!=null">
+                collection_type = #{collectionType}
+            </if>
+        </trim>
+    </select>
+
+</mapper>

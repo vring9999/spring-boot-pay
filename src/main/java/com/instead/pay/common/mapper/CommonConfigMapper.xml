@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.instead.pay.common.mapper.CommonConfigMapper">
+
+    <sql id="select_sql">
+        id id,
+        CFG_NAME cfgName,
+        CFG_KEY cfgKey,
+        CFG_VALUE cfgValue,
+        CFG_REMARK cfgRemark,
+        CFG_TYPE cfgType
+    </sql>
+
+    <sql id="operator_sql">
+        id ,
+        CFG_NAME ,
+        CFG_KEY ,
+        CFG_VALUE ,
+        CFG_REMARK ,
+        CFG_TYPE
+    </sql>
+
+    <select id="queryCommons" resultType="CommonConfig" parameterType="java.util.Map">
+        select
+        <include refid="select_sql"></include>
+        from instead_common_config
+        <where>
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+            <if test="cfgName!=null">
+                and CFG_NAME = #{cfgName}
+            </if>
+            <if test="cfgKey!=null">
+                and CFG_KEY = #{cfgKey}
+            </if>
+            <if test="cfgValue!=null">
+                and CFG_VALUE = #{cfgValue}
+            </if>
+            <if test="cfgRemark!=null">
+                and CFG_REMARK = #{cfgRemark}
+            </if>
+            <if test="cfgType!=null">
+                and CFG_TYPE = #{cfgType}
+            </if>
+        </where>
+    </select>
+
+    <insert id="addCommon" parameterType="CommonConfig">
+        insert into instead_common_config
+        (<include refid="operator_sql"></include>)
+        values(
+        #{id},
+        #{cfgName},
+        #{cfgKey},
+        #{cfgValue},
+        #{cfgRemark},
+        #{cfgType}
+        )
+    </insert>
+
+    <update id="updCommon" parameterType="CommonConfig">
+        update instead_common_config
+            set
+                CFG_NAME = #{cfgName},
+                CFG_KEY = #{cfgKey},
+                CFG_VALUE = #{cfgValue},
+                CFG_REMARK = #{cfgRemark},
+                CFG_TYPE = #{cfgType}
+            where
+                id = #{id}
+    </update>
+
+    <delete id="delCommon" parameterType="java.lang.String">
+        delete from instead_common_config where id = #{id}
+    </delete>
+
+
+    <select id="getCommonsById" resultType="CommonConfig" parameterType="java.lang.String">
+    select
+    <include refid="select_sql"></include>
+    from instead_common_config
+    where id = #{id}
+    </select>
+</mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.instead.pay.qr.mapper.QrMapper">
+
+    <sql id="select_sql">
+		qr_id qrId,
+		qr_url qrUrl,
+		create_time createTime,
+		enable_status enableStatus,
+		bank_account bankAccount,
+		Receipt_name receiptName,
+		Receipt_type receiptType,
+		qr_number qrNumber,
+		commercial_number commercialNumber
+	</sql>
+
+    <sql id="operator_sql">
+        qr_id ,qr_url ,create_time ,Receipt_name,Receipt_type,bank_account,commercial_number
+    </sql>
+
+    <select id="getUrlMoney" parameterType="java.lang.String" resultType="java.util.Map">
+        select qr_url qrUrl,bank_account bankAccount,float_money floatMoney
+        from instead_pay_qr qr,instead_pay_order od
+        where od.order_Id = #{orderId} and od.qr_Id = qr.qr_Id
+    </select>
+
+    <select id="queryQrAll" resultType="Qr" parameterType="java.util.Map">
+        select
+        <include refid="select_sql"></include>
+        from instead_pay_qr
+        <trim prefix="where" suffixOverrides="and">
+            <if test="qrId!=null">
+                qr_id = #{qrId} and
+            </if>
+            <if test="qrUrl!=null">
+                qr_url = #{qrUrl} and
+            </if>
+            <if test="enableStatus!=null">
+                enable_status = #{enableStatus} and
+            </if>
+            <if test="receiptName!=null">
+                Receipt_name = #{receiptName} and
+            </if>
+            <if test="receiptType!=null">
+                Receipt_type = #{receiptType} and
+            </if>
+            <if test="commercialNumber!=null">
+                commercial_number = #{commercialNumber} and
+            </if>
+        </trim>
+    </select>
+
+    <select id="selectQrCode" resultType="Qr" parameterType="java.util.Map">
+        SELECT
+        qr_id qrId,
+        qr_url qrUrl,
+        qr_number qrNumber
+        from instead_pay_qr
+        where enable_status = 1 and Receipt_type =#{receiptType} and commercial_number = #{commercialNumber}
+        order by qr_number asc
+        limit 1
+    </select>
+
+    <select id="selectMaxNumber" resultType="java.lang.Integer">
+        SELECT
+        max(qr_number) maxNumber
+        from instead_pay_qr
+        where commercial_number='0000000000'
+    </select>
+
+    <insert id="insert" parameterType="Qr">
+        insert into instead_pay_qr
+        (<include refid="operator_sql"></include>)
+        values(
+        #{qrId},
+        #{qrUrl},
+        #{createTime},
+        #{receiptName},
+        #{receiptType},
+        #{bankAccount},
+        #{commercialNumber}
+        )
+    </insert>
+
+    <update id="updateEnableStatus" parameterType="java.util.Map">
+        update instead_pay_qr
+        SET enable_status = #{enableStatus}
+        where qr_id = #{qrId}
+    </update>
+
+    <update id="updateNumber" parameterType="Qr">
+        update instead_pay_qr
+        SET qr_number = #{qrNumber}
+        where qr_id = #{qrId}
+    </update>
+
+    <update id="updateQr" parameterType="Qr">
+        update instead_pay_qr
+        SET
+        qr_url = #{qrUrl},
+        enable_status = #{enableStatus},
+        Receipt_name = #{receiptName},
+        Receipt_type = #{receiptType},
+        bank_acocunt = #{bankAccount}
+        where qr_id = #{qrId}
+    </update>
+
+    <select id="getQrById" resultType="Qr" parameterType="java.lang.String">
+        select
+        <include refid="select_sql"></include>
+        from instead_pay_qr
+        where qr_id = #{qrId}
+    </select>
+</mapper>

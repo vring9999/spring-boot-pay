@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.instead.pay.appInfo.mapper.AppInfoMapper">
+
+    <sql id="select_sql">
+		app_id appId,
+		commercial_number commercialNumber,
+		app_name appName,
+		app_img appImg,
+		app_white_list appWhiteList,
+		app_back_url appBackUrl,
+		app_key appKey,
+		app_isPut appIsPut,
+		create_time createTime,
+		operator_name operatorName,
+		operator_time operatorTime,
+		remark1 remark1,
+		remark2 remark2
+	</sql>
+
+    <sql id="operator_sql">
+        app_id ,commercial_number ,app_name ,app_img ,app_white_list, app_back_url,app_key,app_isPut,
+        create_Time,operator_name,operator_time,remark1,remark2
+    </sql>
+
+
+    <select id="getCodeName" parameterType="java.lang.String" resultType="java.util.Map">
+        select app_id appId,app_name appName,app_key appKey
+        from instead_pay_app
+        where commercial_number = #{commercialNumber}
+    </select>
+
+    <select id="queryAppInfo" resultType="AppInfo" parameterType="java.util.Map">
+        SELECT
+        <include refid="select_sql"></include>
+        from instead_pay_app
+        <trim  prefix="where" suffixOverrides="and" >
+            <if test="commercialNumber!=null">
+                commercial_number = #{commercialNumber} and
+            </if>
+            <if test="appId!=null">
+                app_id = #{appId} and
+            </if>
+            <if test="appName!=null">
+                app_name = #{appName} and
+            </if>
+        </trim>
+    </select>
+
+    <select id="getAppById" resultType="AppInfo" parameterType="java.lang.String">
+        SELECT
+        <include refid="select_sql"></include>
+        from instead_pay_app
+        where app_id = #{appId}
+    </select>
+
+    <select id="getAppByKey" resultType="AppInfo" parameterType="java.lang.String">
+        SELECT
+        <include refid="select_sql"></include>
+        from instead_pay_app
+        where app_key = #{appKey}
+    </select>
+
+    <select id="getAppByName" resultType="AppInfo" parameterType="java.lang.String">
+        SELECT
+        <include refid="select_sql"></include>
+        from instead_pay_app
+        where app_name = #{appName}
+    </select>
+
+    <select id="getAppByComId" resultType="AppInfo" parameterType="java.lang.String">
+        SELECT
+        <include refid="select_sql"></include>
+        from instead_pay_app
+        where commercial_number = #{commercialNumber}
+    </select>
+
+    <insert id="insertAppInfo" parameterType="AppInfo">
+        insert into instead_pay_app
+        (<include refid="operator_sql"></include>)
+        values(
+        #{appId},
+        #{commercialNumber},
+        #{appName},
+        #{appImg},
+        #{appWhiteList},
+        #{appBackUrl},
+        #{appKey},
+        #{appIsPut},
+        #{createTime},
+        #{operatorName},
+        #{operatorTime},
+        #{remark1},
+        #{remark2}
+        )
+    </insert>
+
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from instead_pay_app
+        where app_id = #{appId}
+    </delete>
+
+    <update id="updateAppInfo" parameterType="AppInfo">
+        update instead_pay_app
+        <trim  prefix="set" suffixOverrides="," >
+            <if test="appName != null">
+                app_name = #{appName},
+            </if>
+            <if test="appWhiteList != null">
+                app_white_list = #{appWhiteList},
+            </if>
+            <if test="appBackUrl != null">
+                app_back_url = #{appBackUrl},
+            </if>
+            <if test="appKey != null">
+                app_key = #{appKey},
+            </if>
+            <if test="appIsPut != null">
+                app_isPut = #{appIsPut},
+            </if>
+            <if test="operatorTime != null">
+                operator_time = #{operatorTime},
+            </if>
+        </trim>
+        where app_id = #{appId}
+    </update>
+</mapper>

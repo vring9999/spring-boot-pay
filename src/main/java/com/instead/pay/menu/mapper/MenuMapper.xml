@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.instead.pay.menu.mapper.MenuMapper">
+    <sql id="select_sql">
+        menu_id menuId,
+        menu_name menuName,
+        menu_url menuUrl,
+        url_pre urlPre,
+        parent_Id parentId,
+        update_time updateTime,
+        remark
+    </sql>
+
+    <sql id="operator_sql">
+        menu_id ,
+        menu_name ,
+        menu_url ,
+        url_pre ,
+        parent_Id ,
+        update_time ,
+        remark
+    </sql>
+
+    <insert id="insert" parameterType="Menu">
+        insert into instead_pay_menu
+        (<include refid="operator_sql"></include>)
+        value(
+        #{menuId},
+        #{menuName},
+        #{menuUrl},
+        #{urlPre},
+        #{parentId},
+        #{updateTime},
+        #{remark}
+        )
+
+    </insert>
+
+    <select id="findMenuByRole" resultType="java.util.Map" parameterType="java.util.Map">
+        select
+        <include refid="select_sql"></include>
+        from instead_pay_menu
+        where 1=1
+        <if test="roleId!=null">
+            and menu_id in (select menu_id from instead_pay_role_menu where role_id = #{roleId})
+        </if>
+        <if test="parentId!=null">
+            and parent_id = #{parentId}
+        </if>
+        <if test="menuId!=null">
+            and menu_id = #{menuId}
+        </if>
+        <if test="roleName!=null">
+            and menu_id IN ( SELECT menu_id FROM instead_pay_role_menu WHERE role_id IN ( SELECT role_id FROM
+            instead_pay_role WHERE role_name = #{roleName} ) )
+        </if>
+    </select>
+
+    <select id="getMenu" resultType="Menu" parameterType="java.util.Map">
+        select
+        <include refid="select_sql"></include>
+        from instead_pay_menu
+        where 1=1
+        <if test="menuId!=null">
+            and menu_id = #{menuId}
+        </if>
+        <if test="menuName!=null">
+            and menu_name = #{menuName}
+        </if>
+        <if test="menuUrl!=null">
+            and menu_url = #{menuUrl}
+        </if>
+    </select>
+
+    <select id="findAllUrl" resultType="java.lang.String" parameterType="java.util.Map">
+
+        select menu_url from instead_pay_menu
+        where 1 = 1
+        <if test="parentId != null">
+            and parentId = #{parentId}
+        </if>
+    </select>
+
+</mapper>

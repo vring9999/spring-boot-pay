@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.instead.pay.orderInfo.mapper.OrderInfoMapper">
+
+    <sql id="select_sql">
+		order_Id orderId,
+		out_id outId,
+		commercial_Number commercialNumber,
+		operator_money operatorMoney,
+		float_money floatMoney,
+		deducted_money deductedMoney,
+		qr_Id qrId,
+		maker_name makerName,
+		create_Time createTime,
+		confirm_time confirmTime,
+		operator_name operatorName,
+		application_name applicationName,
+		num num,
+		pay_type payType,
+		order_status orderStatus,
+		application_type applicationType,
+		is_hand isHand,
+		remark remark,
+		call_back_url callBackUrl,
+		call_back_num callBackNum,
+		bitcoin bitcoin,
+		remark4 remark4,
+		serial_no serialNo,
+		remit_url remitUrl,
+		bank_account bankAccount,
+		bank_name bankName,
+		bank_address bankAddress,
+		bank_user_name bankUserName,
+		bank_phone bankPhone,
+		our_ratio outRatio,
+		back_status backStatus,
+		back_info backInfo
+
+	</sql>
+
+    <sql id="operator_sql_out">
+        order_Id ,out_id,commercial_Number ,operator_money ,
+        float_money ,deducted_money,qr_Id,maker_name,create_Time,confirm_time ,
+        operator_name ,application_name ,num,pay_type,order_status,application_type,
+        is_hand,remark,call_back_url,call_back_num,bitcoin,remark4,serial_no ,
+		remit_url ,bank_account ,bank_name ,bank_address ,bank_user_name ,
+		bank_phone,our_ratio,line
+    </sql>
+
+    <sql id="operator_sql_in">
+        order_Id ,
+        out_id,
+        commercial_Number ,
+        operator_money ,
+        float_money ,
+        deducted_money,
+        qr_Id,
+        maker_name,
+        create_Time,
+        confirm_time ,
+        operator_name ,
+        application_name ,
+        num,
+        pay_type,
+        order_status,
+        application_type,
+        is_hand,
+        remark,
+        call_back_url,
+        call_back_num,
+        bitcoin,
+        remark4,
+        serial_no,
+        our_ratio,
+        remit_url,
+        line
+    </sql>
+    <insert id="insertOrderInfo" parameterType="OrderInfo">
+        insert into instead_pay_order
+        (<include refid="operator_sql_in"></include>)
+        values(
+        #{orderId},
+        #{outId},
+        #{commercialNumber},
+        #{operatorMoney},
+        #{floatMoney},
+        #{deductedMoney},
+        #{qrId},
+        #{makerName},
+        #{createTime},
+        #{confirmTime},
+        #{operatorName},
+        #{applicationName},
+        #{num},
+        #{payType},
+        #{orderStatus},
+        #{applicationType},
+        #{isHand},
+        #{remark},
+        #{callBackUrl},
+        #{callBackNum},
+        #{bitcoin},
+        #{remark4},
+        #{serialNo},
+        #{outRatio},
+        #{remitUrl},
+        #{line}
+        )
+    </insert>
+
+
+    <select id="queryOrderInfoCash" resultType="OrderInfo" parameterType="java.util.Map">
+        SELECT
+        od.order_Id orderId,
+        od.out_id outId,
+        od.commercial_Number commercialNumber,
+        od.operator_money operatorMoney,
+        od.operator_name operatorName,
+        od.deducted_money deductedMoney,
+        od.maker_name makerName,
+        od.create_Time createTime,
+        od.confirm_time confirmTime,
+        od.pay_type payType,
+        od.order_status orderStatus,
+        od.application_type applicationType,
+        od.is_hand isHand,
+        od.remark remark,
+        od.our_ratio outRatio,
+        od.back_status backStatus,
+        comm.commercial_name commerCialName,
+        od.bank_phone bankPhone,
+        od.bank_name bankName,
+        od.bank_user_name bankUserName,
+        comm.reserved2 appName,
+        od.remit_url remitUrl
+        from instead_pay_order od,instead_pay_commercial comm
+        <trim  prefix="where" suffixOverrides="and" >
+            <if test="orderId!=null">
+                od.order_Id = #{orderId} and
+            </if>
+            <if test="outId!=null">
+                out_Id = #{outId} and
+            </if>
+            <if test="commerCialName!=null">
+                comm.commercial_name = #{commerCialName} and
+            </if>
+            <if test="commercialNumber!=null">
+                od.commercial_Number = #{commercialNumber} and
+            </if>
+            <if test="makerName!=null">
+                maker_name = #{makerName} and
+            </if>
+            <if test="operatorName!=null">
+                od.operator_name = #{operatorName} and
+            </if>
+            <if test="applicationName!=null">
+                od.application_name = #{applicationName} and
+            </if>
+            <if test="applicationType!=null">
+                od.application_type = #{applicationType} and
+            </if>
+            <if test="orderStatus!=null">
+                od.order_status = #{orderStatus} and
+            </if>
+            <if test="isHand!=null">
+                od.is_hand = #{isHand} and
+            </if>
+            <if test="pay_type!=null">
+                od.pay_type = #{pay_type} and
+            </if>
+            <if test="createTime!=null">
+                od.create_Time like concat("%",#{createTime},"%") and
+            </if>
+            <if test="bankPhone!=null">
+                od.bank_phone = #{bankPhone} and
+            </if>
+            <if test="openDate!=null">
+                od.create_Time > #{openDate} and
+            </if>
+            <if test="endDate!=null">
+                od.create_Time <![CDATA[<=]]> #{endDate} and
+            </if>
+            <if test="remark!=null">
+                od.remark = #{remark}
+            </if>
+        </trim>
+        and od.commercial_Number = comm.commercial_Number
+        order by od.create_Time desc
+    </select>
+
+
+    <select id="queryOrderInfoByCz" resultType="OrderInfo" parameterType="java.util.Map">
+        SELECT
+        od.order_Id orderId,
+        od.commercial_Number commercialNumber,
+        od.operator_money operatorMoney,
+        od.operator_name operatorName,
+        od.deducted_money deductedMoney,
+        od.maker_name makerName,
+        od.create_Time createTime,
+        od.confirm_time confirmTime,
+        od.pay_type payType,
+        od.order_status orderStatus,
+        od.application_type applicationType,
+        od.is_hand isHand,
+        od.remark remark,
+        od.our_ratio outRatio,
+        od.back_status backStatus,
+        comm.reserved2 commerCialName,
+        od.bank_phone bankPhone,
+        od.bank_name bankName,
+        od.bank_user_name bankUserName,
+        od.operator_name operatorName,
+        od.remit_url remitUrl
+        from instead_pay_order od,instead_pay_commercial comm
+        <trim  prefix="where" suffixOverrides="and" >
+            <if test="orderId!=null">
+                od.order_Id = #{orderId} and
+            </if>
+            <if test="outId!=null">
+                out_Id = #{outId} and
+            </if>
+            <if test="commerCialName!=null">
+                comm.commercial_name = #{commerCialName} and
+            </if>
+            <if test="commercialNumber!=null">
+                od.commercial_Number = #{commercialNumber} and
+            </if>
+            <if test="makerName!=null">
+                maker_name = #{makerName} and
+            </if>
+            <if test="operatorName!=null">
+                od.operator_name = #{operatorName} and
+            </if>
+            <if test="applicationName!=null">
+                od.application_name = #{applicationName} and
+            </if>
+            <if test="applicationType!=null">
+                od.application_type = #{applicationType} and
+            </if>
+            <if test="orderStatus!=null">
+                od.order_status = #{orderStatus} and
+            </if>
+            <if test="isHand!=null">
+                od.is_hand = #{isHand} and
+            </if>
+            <if test="pay_type!=null">
+                od.pay_type = #{pay_type} and
+            </if>
+            <if test="createTime!=null">
+                od.create_Time like concat("%",#{createTime},"%") and
+            </if>
+            <if test="bankPhone!=null">
+                bank_phone = #{bankPhone} and
+            </if>
+            <if test="openDate!=null">
+                od.create_Time > #{openDate} and
+            </if>
+            <if test="endDate!=null">
+                od.create_Time <![CDATA[<=]]> #{endDate} and
+            </if>
+            <if test="remark!=null">
+                od.remark = #{remark}
+            </if>
+        </trim>
+        and od.commercial_Number = comm.commercial_Number
+        order by od.create_Time desc
+    </select>
+
+
+    <select id="queryOrderInfo" resultType="OrderInfo" parameterType="java.util.Map">
+        SELECT
+        od.order_Id orderId,
+        od.out_id outId,
+        od.commercial_Number commercialNumber,
+        od.operator_money operatorMoney,
+        od.operator_name operatorName,
+        od.deducted_money deductedMoney,
+        od.maker_name makerName,
+        od.create_Time createTime,
+        od.confirm_time confirmTime,
+        od.pay_type payType,
+        od.order_status orderStatus,
+        od.application_type applicationType,
+        od.is_hand isHand,
+        od.remark remark,
+        od.remark4 remark4,
+        od.our_ratio outRatio,
+        od.back_status backStatus,
+        comm.commercial_name commerCialName,
+        od.bank_phone bankPhone,
+        od.bank_name bankName,
+        od.bank_user_name bankUserName,
+        app.app_name appName,
+        od.operator_name operatorName,
+        od.remit_url remitUrl
+        from instead_pay_order od,instead_pay_commercial comm,instead_pay_app app
+        <trim  prefix="where" suffixOverrides="and" >
+            <if test="orderId!=null">
+                od.order_Id = #{orderId} and
+            </if>
+            <if test="outId!=null">
+                out_Id = #{outId} and
+            </if>
+            <if test="commerCialName!=null">
+                comm.commercial_name = #{commerCialName} and
+            </if>
+            <if test="commercialNumber!=null">
+                od.commercial_Number = #{commercialNumber} and
+            </if>
+            <if test="makerName!=null">
+                maker_name = #{makerName} and
+            </if>
+            <if test="operatorName!=null">
+                od.operator_name = #{operatorName} and
+            </if>
+            <if test="applicationName!=null">
+                od.application_name = #{applicationName} and
+            </if>
+            <if test="applicationType!=null">
+                od.application_type = #{applicationType} and
+            </if>
+            <if test="orderStatus!=null">
+                od.order_status = #{orderStatus} and
+            </if>
+            <if test="isHand!=null">
+                od.is_hand = #{isHand} and
+            </if>
+            <if test="pay_type!=null">
+                od.pay_type = #{pay_type} and
+            </if>
+            <if test="createTime!=null">
+                od.create_Time like concat("%",#{createTime},"%") and
+            </if>
+            <if test="bankPhone!=null">
+                bank_phone = #{bankPhone} and
+            </if>
+            <if test="openDate!=null">
+                od.create_Time > #{openDate} and
+            </if>
+            <if test="endDate!=null">
+                od.create_Time <![CDATA[<=]]> #{endDate} and
+            </if>
+            <if test="remark!=null">
+                od.remark = #{remark}
+            </if>
+        </trim>
+            and od.commercial_Number = comm.commercial_Number and od.application_name = app.app_id
+        order by od.create_Time desc
+    </select>
+
+    <select id="getOrderInfoById" resultType="OrderInfo" parameterType="java.lang.String">
+        SELECT
+        <include refid="select_sql"></include>
+        from instead_pay_order
+        where order_Id = #{orderId} or out_Id = #{orderId}
+    </select>
+
+    <select id="getOrderInfoByOutId" resultType="OrderInfo" parameterType="java.lang.String">
+        SELECT
+        <include refid="select_sql"></include>
+        from instead_pay_order
+        where out_Id = #{outId}
+    </select>
+
+    <select id="getOrderAllMoney" resultType="java.lang.Integer">
+        SELECT
+        float_money floatMoney
+        from instead_pay_order
+        where order_status = 1
+    </select>
+
+
+
+    <insert id="insertOrderInfo_out" parameterType="OrderInfo">
+        insert into instead_pay_order
+        (<include refid="operator_sql_out"></include>)
+        values(
+        #{orderId},
+        #{outId},
+        #{commercialNumber},
+        #{operatorMoney},
+        #{floatMoney},
+        #{deductedMoney},
+        #{qrId},
+        #{makerName},
+        #{createTime},
+        #{confirmTime},
+        #{operatorName},
+        #{applicationName},
+        #{num},
+        #{payType},
+        #{orderStatus},
+        #{applicationType},
+        #{isHand},
+        #{remark},
+        #{callBackUrl},
+        #{callBackNum},
+        #{bitcoin},
+        #{remark4},
+        #{serialNo},
+        #{remitUrl},
+        #{bankAccount},
+        #{bankName},
+        #{bankAddress},
+        #{bankUserName},
+        #{bankPhone},
+        #{outRatio},
+        #{line}
+        )
+    </insert>
+
+    <update id="updateOrderInfo" parameterType="OrderInfo">
+        update instead_pay_order
+        <trim prefix="set" suffixOverrides=",">
+            <if test="confirmTime != null">
+                confirm_time=#{confirmTime} ,
+            </if>
+            <if test="orderStatus!=null">
+                order_status = #{orderStatus} ,
+            </if>
+
+            <if test="backStatus!=null">
+                back_status = #{backStatus} ,
+            </if>
+            <if test="outRatio!=null">
+                our_ratio = #{outRatio} ,
+            </if>
+            <if test="backInfo!=null">
+                back_info = #{backInfo} ,
+            </if>
+
+            <if test="callBackNum!=null">
+                call_back_num=#{callBackNum} ,
+            </if>
+            <if test="serialNo!=null">
+                serial_no=#{serialNo} ,
+            </if>
+            <if test="remitUrl!=null">
+                remit_url=#{remitUrl} ,
+            </if>
+            <if test="deductedMoney!=null">
+                deducted_money=#{deductedMoney},
+            </if>
+            <if test="makerName!=null">
+                maker_name = #{makerName},
+            </if>
+            <if test="bankAccount!=null">
+                bank_account=#{bankAccount} ,
+            </if>
+            <if test="bankName!=null">
+                bank_name=#{bankName} ,
+            </if>
+            <if test="bankAddress!=null">
+                bank_address=#{bankAddress},
+            </if>
+            <if test="bankPhone!=null">
+                bank_phone = #{bankPhone},
+            </if>
+            <if test="bankUserName!=null">
+                bank_user_name = #{bankUserName},
+            </if>
+            <if test="line!=null">
+                line = #{line},
+            </if>
+        </trim>
+        where order_Id = #{orderId}
+    </update>
+
+
+
+
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" separator=";">
+            UPDATE instead_pay_order
+            <set>
+                <if test="item.orderStatus!=null">
+                    order_status = #{item.orderStatus} ,
+                </if>
+
+                <if test="item.backStatus!=null">
+                    back_status = #{item.backStatus} ,
+                </if>
+                <if test="item.callBackUrl != null">
+                    call_back_url = #{item.callBackUrl},
+                </if>
+                <if test="item.remark != null">
+                    remark = #{item.remark},
+                </if>
+            </set>
+            WHERE order_Id = #{item.orderId}
+        </foreach>
+    </update>
+
+
+    <update id="updateUrl" parameterType="java.util.HashMap">
+        update instead_pay_order
+        <trim prefix="set" suffixOverrides=",">
+            <if test="remitUrl != null">
+                remit_url=#{remitUrl},
+            </if>
+            <if test="serialNo!=null">
+                serial_no=#{serialNo}
+            </if>
+        </trim>
+        where order_Id = #{orderId}
+    </update>
+
+    <select id="getHome" resultType="java.util.HashMap">
+        select
+            sum(t.allInNum) allInNum,
+            sum(t.allOutNum) allOutNum,
+            sum(t.allInMoney) allInMoney,
+            sum(t.allOutMoney) allOutMoney,
+            sum(t.dayInMoney) dayInMoney,
+            sum(t.dayOutMoney) dayOutMoney,
+            sum(t.dayInCount) dayInCount,
+            sum(t.dayOutCount) dayOutCount
+        from(
+        SELECT
+
+            case when (application_type = 1 or application_type = 4) then count(1) else 0 end allInNum,
+            case when (application_type = 3 or application_type = 2) then count(1) else 0 end allOutNum,
+            case when (application_type = 1 or application_type = 4)
+                            then sum(operator_money) else 0 end allInMoney,
+            case when ( application_type = 3 or application_type = 2 )
+                            then sum(operator_money) else 0 end allOutMoney,
+            case when (application_type = 1 or application_type = 4)
+                                    and DATEDIFF(now(),DATE(confirm_time))  = 0
+                            then sum(operator_money) else 0 end dayInMoney,
+            case when ( application_type = 3 or application_type = 2 ) and
+                                    DATEDIFF(now(),DATE(confirm_time))  = 0
+                            then sum(operator_money) else 0 end dayOutMoney,
+            case when (application_type = 1 or application_type = 4)
+                                    and DATEDIFF(now(),DATE(confirm_time))  = 0
+                            then count(1) else 0 end dayInCount,
+            case when ( application_type = 3 or application_type = 2 ) and
+                                    DATEDIFF(now(),DATE(confirm_time))  = 0
+            THEN count( 1 ) ELSE 0
+        END dayOutCount
+        FROM
+            instead_pay_order
+        where
+            order_status = 1
+        GROUP BY
+            application_type,
+            confirm_time
+            )t
+    </select>
+
+    <select id="getOrderStatic" parameterType="java.util.HashMap" resultType="java.util.Map">
+        SELECT
+        DATE(create_Time) time,
+        COUNT(order_Id) num,
+        CASE
+        WHEN application_type = '1' THEN
+        '代收'
+        WHEN application_type = '2' THEN
+        '代付'
+        WHEN application_type = '3' THEN
+        '提现'
+        WHEN application_type = '4' THEN
+        '充值'
+        ELSE
+        application_type
+        END AS type,
+        SUM(operator_money) operMoney,
+        SUM(deducted_money) deduMoney
+        FROM
+        `instead_pay_order`
+        WHERE
+        `order_status` = '1'
+        and application_type= #{type}
+        <if test="commercialNumber != null">
+            and commercial_number=#{commercialNumber}
+        </if>
+        and DATE(create_Time) > #{openTime} and DATE(create_Time) <![CDATA[<]]> #{endTime}
+        GROUP BY
+        DATE(create_Time),
+        application_type
+        ORDER BY
+        DATE(create_Time) DESC
+    </select>
+</mapper>
